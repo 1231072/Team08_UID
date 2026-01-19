@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import com.example.uid_finalproject.ui.screens.SecurityScreen
 import com.example.uid_finalproject.ui.screens.ScheduleScreen
 import com.example.uid_finalproject.ui.screens.EnergyScreen
-
+import com.example.uid_finalproject.ui.screens.SettingsScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +43,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.ENERGY) {
                             EnergyScreen(navController = navController)
+                        }
+                        composable(Routes.SETTINGS) {
+                            SettingsScreen(navController = navController)
                         }
                     }
                 }

@@ -5,4 +5,5 @@ object Routes {
     const val SECURITY = "security"
     const val SCHEDULE = "schedule"
     const val ENERGY = "energy"
+    const val SETTINGS ="settings"
 }
