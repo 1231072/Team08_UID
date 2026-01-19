@@ -17,10 +17,12 @@ import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.model.RecentActivityItem
 import com.example.uid_finalproject.model.QuickActionItem
 import androidx.compose.material.icons.rounded.*
+import androidx.navigation.NavController
+import com.example.uid_finalproject.ui.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(navController: NavController) {
     // mocked data
     val statusItems = listOf(
         HomeStatusItem("Security", "Active", Icons.Outlined.Security, Color(0xFFE8F5E9), Color(0xFF2E7D32)),
@@ -63,13 +65,10 @@ fun DashboardScreen() {
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Default.Home, "Home") }, label = { Text("Home") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Security, "Security") }, label = { Text("Security") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.CalendarToday, "Schedule") }, label = { Text("Schedule") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Bolt, "Energy") }, label = { Text("Energy") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Settings, "Settings") }, label = { Text("Settings") })
-            }
+            SmartHomeBottomBar(
+                navController = navController,
+                currentRoute = Routes.HOME
+            )
         }
     ) { paddingValues ->
 
