@@ -13,8 +13,8 @@ data class HomeStatusItem(
 
 data class RoomItem(
     val name: String,
-    val info: String, // ex: "22°C • Light: 60%"
-    val iconRes: Int, // Poderia ser um Drawable ou ImageVector
+    val info: String,
+    val iconRes: Int,
     val isOnline: Boolean
 )
 
@@ -26,8 +26,17 @@ data class ActivityItem(
 
 enum class ActivityType { ALERT, INFO, GENERIC }
 
+data class RecentActivityItem(
+    val title: String,
+    val time: String,
+    val icon: ImageVector,
+    val iconBgColor: Color,
+    val iconColor: Color
+)
+
 data class QuickActionItem(
     val label: String,
     val icon: ImageVector,
-    val color: Color
+    val color: Color,
+    val bgColor: Color
 )

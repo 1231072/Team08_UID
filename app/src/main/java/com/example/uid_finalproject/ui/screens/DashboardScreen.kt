@@ -14,6 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.example.uid_finalproject.model.HomeStatusItem
 import com.example.uid_finalproject.model.RoomItem
 import com.example.uid_finalproject.ui.components.*
+import com.example.uid_finalproject.model.RecentActivityItem
+import com.example.uid_finalproject.model.QuickActionItem
+import androidx.compose.material.icons.rounded.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +36,19 @@ fun DashboardScreen() {
         RoomItem("Grandparents Room", "24°C • Light: 40%", 0, true),
         RoomItem("Living Room", "22°C • Light: 100%", 0, true),
     )
+    val activities = listOf(
+        RecentActivityItem("Window opened in Kids Room", "2 minutes ago", Icons.Rounded.Notifications, Color(0xFFFFEBEE), Color(0xFFD32F2F)),
+        RecentActivityItem("Temperature adjusted in Living Room", "15 minutes ago", Icons.Rounded.Thermostat, Color(0xFFE3F2FD), Color(0xFF1976D2)),
+        RecentActivityItem("Grandma took medication", "1 hour ago", Icons.Rounded.Person, Color(0xFFE8F5E9), Color(0xFF388E3C))
+    )
 
+    // NOVOS DADOS: Ações Rápidas
+    val quickActions = listOf(
+        QuickActionItem("Lock All", Icons.Outlined.Security, Color(0xFF1976D2), Color(0xFFE3F2FD)),
+        QuickActionItem("Lights Off", Icons.Outlined.Lightbulb, Color(0xFFFBC02D), Color(0xFFFFF9C4)),
+        QuickActionItem("Eco Mode", Icons.Outlined.Bolt, Color(0xFF7B1FA2), Color(0xFFF3E5F5)),
+        QuickActionItem("Reminders", Icons.Outlined.Notifications, Color(0xFF388E3C), Color(0xFFE8F5E9))
+    )
     Scaffold(
         topBar = {
             TopAppBar(
@@ -94,6 +109,37 @@ fun DashboardScreen() {
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                SectionHeader("Recent Activity")
+            }
+
+            // activity list
+            items(activities) { activity ->
+                ActivityRow(activity)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                SectionHeader("Quick Actions")
+            }
+
+            // quick actions
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickActionCard(quickActions[0], Modifier.weight(1f))
+                        QuickActionCard(quickActions[1], Modifier.weight(1f))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickActionCard(quickActions[2], Modifier.weight(1f))
+                        QuickActionCard(quickActions[3], Modifier.weight(1f))
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
         }
     }
 }

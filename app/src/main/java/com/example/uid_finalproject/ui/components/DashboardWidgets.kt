@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uid_finalproject.model.HomeStatusItem
+import com.example.uid_finalproject.model.QuickActionItem
+import com.example.uid_finalproject.model.RecentActivityItem
 import com.example.uid_finalproject.model.RoomItem
 
 // red altert
@@ -23,7 +25,7 @@ fun AlertBanner(message: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFD32F2F)) // Vermelho
+            .background(Color(0xFFD32F2F))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -75,7 +77,6 @@ fun RoomListItem(room: RoomItem) {
                     .background(Color(0xFFE0E0E0), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                // Aqui entraria o ícone real
             }
 
             Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
@@ -101,4 +102,73 @@ fun SectionHeader(title: String) {
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
     )
+}
+
+// recent activity
+@Composable
+fun ActivityRow(item: RecentActivityItem) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(item.iconBgColor, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = item.iconColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        Column(modifier = Modifier.padding(start = 16.dp)) {
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = item.time,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+// quick action button
+@Composable
+fun QuickActionCard(item: QuickActionItem, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = item.bgColor),
+        onClick = {}
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = item.color,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = item.label,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
+            )
+        }
+    }
 }
