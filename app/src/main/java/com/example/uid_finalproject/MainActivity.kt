@@ -9,6 +9,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.uid_finalproject.ui.screens.DashboardScreen
 
+object Routes {
+    const val HOME = "home"
+    const val SECURITY = "security"
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
