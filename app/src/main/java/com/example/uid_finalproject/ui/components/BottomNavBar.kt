@@ -43,7 +43,20 @@ fun SmartHomeBottomBar(
             label = { Text("Security") }
         )
 
-        NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.CalendarToday, "Schedule") }, label = { Text("Schedule") })
+        NavigationBarItem(
+            selected = currentRoute == Routes.SCHEDULE,
+            onClick = {
+                if (currentRoute != Routes.SCHEDULE) {
+                    navController.navigate(Routes.SCHEDULE) {
+                        popUpTo(Routes.HOME) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            },
+            icon = { Icon(Icons.Default.CalendarToday, "Schedule") },
+            label = { Text("Schedule") }
+        )
         NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Bolt, "Energy") }, label = { Text("Energy") })
         NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Settings, "Settings") }, label = { Text("Settings") })
     }

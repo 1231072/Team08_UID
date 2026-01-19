@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import com.example.uid_finalproject.ui.navigation.Routes
 import androidx.navigation.compose.composable
 import com.example.uid_finalproject.ui.screens.SecurityScreen
+import com.example.uid_finalproject.ui.screens.ScheduleScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,9 @@ class MainActivity : ComponentActivity() {
 
                         composable(Routes.SECURITY) {
                             SecurityScreen(navController = navController)
+                        }
+                        composable(Routes.SCHEDULE) {
+                            ScheduleScreen(navController = navController)
                         }
                     }
                 }
