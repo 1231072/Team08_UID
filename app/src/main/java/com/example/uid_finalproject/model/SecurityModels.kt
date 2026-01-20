@@ -14,9 +14,11 @@ data class SecurityStatusCount(
 
 // model for doors and windows
 data class EntryPointItem(
+    val id: Int,
     val name: String,
     val state: EntryState,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val isKidsRoom: Boolean = false
 )
 
 enum class EntryState(val label: String, val color: Color, val textColor: Color) {

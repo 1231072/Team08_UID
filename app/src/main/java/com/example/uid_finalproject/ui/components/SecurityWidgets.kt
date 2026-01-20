@@ -16,7 +16,12 @@ import androidx.compose.ui.unit.sp
 import com.example.uid_finalproject.model.EntryPointItem
 import com.example.uid_finalproject.model.MotionSensorItem
 import com.example.uid_finalproject.model.SecurityStatusCount
-
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.ui.window.Dialog
+import com.example.uid_finalproject.model.EntryState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 // alert card
 @Composable
 fun SecurityAlertCard(title: String, message: String, icon: ImageVector) {
@@ -69,26 +74,30 @@ fun SecurityStatusSquare(item: SecurityStatusCount, modifier: Modifier = Modifie
 
 // entry points
 @Composable
-fun EntryPointRow(item: EntryPointItem) {
+fun EntryPointRow(item: EntryPointItem, onStatusClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = 6.dp) // Reduzi um pouco o padding vertical
             .background(Color(0xFFFAFAFA), RoundedCornerShape(8.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = item.icon, contentDescription = null, tint = if(item.state.name.contains("OPEN")) Color.Red else Color(0xFF4CAF50))
+        // Ícone muda de cor se estiver aberto
+        val iconColor = if(item.state == EntryState.OPEN || item.state == EntryState.CURRENTLY_OPEN) Color.Red else Color(0xFF4CAF50)
+
+        Icon(imageVector = item.icon, contentDescription = null, tint = iconColor)
         Text(
             text = item.name,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f).padding(start = 16.dp)
         )
 
-        // O Chip de estado (Open/Closed/Locked)
+        // Chip Clicável
         Surface(
             color = item.state.color,
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.clickable { onStatusClick() } // <--- CLIQUE AQUI
         ) {
             Text(
                 text = item.state.label,
@@ -100,7 +109,6 @@ fun EntryPointRow(item: EntryPointItem) {
     }
 }
 
-// 4. Linha de Sensor de Movimento (Com Switch)
 @Composable
 fun MotionSensorRow(item: MotionSensorItem) {
     Row(
@@ -120,16 +128,16 @@ fun MotionSensorRow(item: MotionSensorItem) {
     }
 }
 
-// 5. Botão Grande (Azul ou Vermelho)
 @Composable
 fun LargeActionButton(
     text: String,
-    icon: ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     backgroundColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Button(
-        onClick = {},
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(12.dp),
         modifier = modifier.height(56.dp)
@@ -137,5 +145,58 @@ fun LargeActionButton(
         Icon(imageVector = icon, contentDescription = null)
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun SecuritySafeCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)) // Verde suave
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF2E7D32))
+            Column(modifier = Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                Text(text = "System Safe", fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                Text(text = "No alerts detected in Kids Room", style = MaterialTheme.typography.bodySmall, color = Color(0xFF2E7D32))
+            }
+        }
+    }
+}
+
+@Composable
+fun CameraDialog(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.fillMaxWidth().height(300.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                // Simulação de video
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.PlayCircle,
+                        contentDescription = "Play",
+                        tint = Color.White,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Text("Live Feed: Kids Room", color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                }
+
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
+                ) {
+                    Text("X", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
     }
 }

@@ -11,56 +11,51 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.uid_finalproject.model.*
 import com.example.uid_finalproject.ui.components.*
-import androidx.navigation.NavController
 import com.example.uid_finalproject.ui.navigation.Routes
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityScreen(navController: NavController) {
+fun SecurityScreen(
+    navController: NavController,
+    viewModel: SecurityViewModel = viewModel()
+) {
+    val entryPoints = viewModel.entryPoints
+    val kidsRoomItems = entryPoints.filter { it.isKidsRoom }
+    val otherEntryPoints = entryPoints.filter { !it.isKidsRoom }
+
+    val doorsLockedStr = "${viewModel.doorsLockedCount} of ${viewModel.totalDoors}"
+    val windowsOpenStr = "${viewModel.windowsOpenCount} of ${viewModel.totalWindows}"
 
     val securityStatusItems = listOf(
-        SecurityStatusCount("Doors Locked", "2 of 2", Icons.Outlined.Lock, Color(0xFFE8F5E9), Color(0xFF2E7D32)),
-        SecurityStatusCount("Windows Open", "1 of 4", Icons.Outlined.Window, Color(0xFFFFEBEE), Color(0xFFD32F2F))
+        SecurityStatusCount("Doors Locked", doorsLockedStr, Icons.Outlined.Lock, Color(0xFFE8F5E9), Color(0xFF2E7D32)),
+        SecurityStatusCount("Windows Open", windowsOpenStr, Icons.Outlined.Window, Color(0xFFFFEBEE), Color(0xFFD32F2F))
     )
-    val kidsRoomItems = listOf(
-        EntryPointItem("Window", EntryState.CURRENTLY_OPEN, Icons.Outlined.Window),
-        EntryPointItem("Door", EntryState.CLOSED, Icons.Outlined.DoorFront)
-    )
+
     val kidsMotion = MotionSensorItem("Motion Sensor", "Activity detected 5 min ago", true)
-
-    val allEntryPoints = listOf(
-        EntryPointItem("Front Door", EntryState.LOCKED, Icons.Outlined.DoorFront),
-        EntryPointItem("Back Door", EntryState.LOCKED, Icons.Outlined.DoorFront),
-        EntryPointItem("Master Bedroom Window", EntryState.CLOSED, Icons.Outlined.Window),
-        EntryPointItem("Living Room Window", EntryState.CLOSED, Icons.Outlined.Window),
-        EntryPointItem("Grandparents Window", EntryState.CLOSED, Icons.Outlined.Window)
-    )
-
     val motionSensors = listOf(
         MotionSensorItem("Living Room", "No motion detected", true),
         MotionSensorItem("Hallway", "Active", true)
     )
 
+    if (viewModel.showCameraPopup) {
+        CameraDialog(onDismiss = { viewModel.showCameraPopup = false })
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Security", style = MaterialTheme.typography.titleLarge) },
-                navigationIcon = {
-                    IconButton(onClick = {}) { Icon(Icons.Default.Menu, contentDescription = "Menu") }
-                },
-                actions = {
-                    IconButton(onClick = {}) { Icon(Icons.Default.Add, contentDescription = "Add") }
-                }
+                navigationIcon = { IconButton(onClick = {}) { Icon(Icons.Default.Menu, contentDescription = "Menu") } },
+                actions = { IconButton(onClick = {}) { Icon(Icons.Default.Add, contentDescription = "Add") } }
             )
         },
         bottomBar = {
-            SmartHomeBottomBar(
-                navController = navController,
-                currentRoute = Routes.HOME
-            )
+            SmartHomeBottomBar(navController = navController, currentRoute = Routes.SECURITY)
         }
     ) { paddingValues ->
 
@@ -71,21 +66,27 @@ fun SecurityScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // alert
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                AlertBanner("Alert: Window Open in Kids Room")
-            }
-            item { SectionHeader("Security Status") }
-            item {
-                SecurityAlertCard(
-                    title = "1 Alert",
-                    message = "Kids room window open",
-                    icon = Icons.Default.Warning
-                )
+            if (viewModel.hasKidsRoomAlert) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AlertBanner("Alert: Window/Door Open in Kids Room")
+                }
             }
 
-            // status grid
+            item { SectionHeader("Security Status") }
+
+            item {
+                if (viewModel.hasKidsRoomAlert) {
+                    SecurityAlertCard(
+                        title = "${viewModel.kidsRoomAlerts} Alert(s)",
+                        message = "Kids room entry point open",
+                        icon = Icons.Default.Warning
+                    )
+                } else {
+                    SecuritySafeCard()
+                }
+            }
+
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     SecurityStatusSquare(securityStatusItems[0], Modifier.weight(1f))
@@ -96,7 +97,10 @@ fun SecurityScreen(navController: NavController) {
             item { SectionHeader("Kids Room Safety") }
 
             items(kidsRoomItems) { item ->
-                EntryPointRow(item)
+                EntryPointRow(
+                    item = item,
+                    onStatusClick = { viewModel.toggleEntryPoint(item.id) }
+                )
             }
             item { MotionSensorRow(kidsMotion) }
 
@@ -105,17 +109,19 @@ fun SecurityScreen(navController: NavController) {
                     text = "View Live Camera",
                     icon = Icons.Default.Videocam,
                     backgroundColor = Color(0xFF2962FF),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.showCameraPopup = true }
                 )
             }
 
-            // entry points
             item { SectionHeader("All Entry Points") }
-            items(allEntryPoints) { item ->
-                EntryPointRow(item)
+            items(otherEntryPoints) { item ->
+                EntryPointRow(
+                    item = item,
+                    onStatusClick = { viewModel.toggleEntryPoint(item.id) }
+                )
             }
 
-            // motion
             item { SectionHeader("Motion Detection") }
             items(motionSensors) { item ->
                 MotionSensorRow(item)
@@ -130,13 +136,15 @@ fun SecurityScreen(navController: NavController) {
                         text = "Lock All Doors",
                         icon = Icons.Default.Lock,
                         backgroundColor = Color(0xFFD32F2F),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = { viewModel.lockAllDoors() }
                     )
                     LargeActionButton(
                         text = "View All Cameras",
                         icon = Icons.Default.Videocam,
                         backgroundColor = Color(0xFF2962FF),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = { viewModel.showCameraPopup = true }
                     )
                 }
             }

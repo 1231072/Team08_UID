@@ -117,13 +117,15 @@ fun EnergyScreen(navController: NavController) {
                         text = "Eco Mode",
                         icon = Icons.Default.Eco,
                         backgroundColor = Color(0xFF4CAF50),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {}
                     )
                     LargeActionButton(
                         text = "View Report",
                         icon = Icons.Default.Bolt,
                         backgroundColor = Color(0xFF2962FF),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {}
                     )
                 }
             }
