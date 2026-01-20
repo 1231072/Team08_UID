@@ -20,10 +20,10 @@ import com.example.uid_finalproject.model.QuickActionItem
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
 import kotlinx.coroutines.launch
-
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
+fun DashboardScreen(navController: NavController, viewModel: MainViewModel = viewModel(), securityViewModel: SecurityViewModel) {
 
 
     val rooms = viewModel.rooms
@@ -70,9 +70,11 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
         ) {
 
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                AlertBanner("Alert: Window Open in Kids Room")
+            if (securityViewModel.hasKidsRoomAlert) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AlertBanner("Alert: Window/Door Open in Kids Room")
+                }
             }
             item { SectionHeader("Home Status") }
 

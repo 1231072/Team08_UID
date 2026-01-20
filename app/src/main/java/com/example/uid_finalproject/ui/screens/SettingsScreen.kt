@@ -15,10 +15,10 @@ import androidx.navigation.NavController
 import com.example.uid_finalproject.MainViewModel
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
-
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
+fun SettingsScreen(navController: NavController, viewModel: MainViewModel = viewModel(), securityViewModel: SecurityViewModel) {
 
     val familyMembers = viewModel.familyMembers
     val notifications = viewModel.notificationSettings
@@ -47,9 +47,11 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel = view
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                AlertBanner("Alert: Window Open in Kids Room")
+            if (securityViewModel.hasKidsRoomAlert) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AlertBanner("Alert: Window/Door Open in Kids Room")
+                }
             }
 
             item { SectionHeader("Family Profile") }

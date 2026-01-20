@@ -17,7 +17,10 @@ import com.example.uid_finalproject.data.NewUser
 import com.example.uid_finalproject.data.SensorData
 import com.example.uid_finalproject.model.*
 import kotlinx.coroutines.launch
-
+import androidx.compose.ui.graphics.vector.ImageVector
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Date
 class MainViewModel : ViewModel() {
     private val apiService = ApiService.create()
     var isEcoModeActive by mutableStateOf(false)
@@ -188,6 +191,11 @@ class MainViewModel : ViewModel() {
             val newState = if (item.name.contains("Window")) EntryState.CLOSED else EntryState.LOCKED
             entryPoints[index] = item.copy(state = newState)
         }
+        addActivity(
+            title = "All Doors Locked",
+            icon = Icons.Outlined.Security,
+            color = Color(0xFF1976D2)
+        )
     }
 
     fun logout() {
@@ -227,6 +235,11 @@ class MainViewModel : ViewModel() {
                     value = "Normal",
                 )
             }
+            addActivity(
+                title = "Eco Mode Deactivated",
+                icon = Icons.Outlined.Bolt,
+                color = Color.Gray
+            )
 
             isEcoModeActive = false
 
@@ -242,8 +255,27 @@ class MainViewModel : ViewModel() {
                     value = "Eco",
                 )
             }
+            addActivity(
+                title = "Eco Mode Activated",
+                icon = Icons.Outlined.Bolt,
+                color = Color(0xFF7B1FA2)
+            )
 
             isEcoModeActive = true
         }
+
+
+    }
+    private fun addActivity(title: String, icon: ImageVector, color: Color) {
+        val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+        val newItem = RecentActivityItem(
+            title = title,
+            time = "Today, $currentTime",
+            icon = icon,
+            iconBgColor = color.copy(alpha = 0.2f),
+            iconColor = color
+        )
+        activities.add(0, newItem)
     }
 }

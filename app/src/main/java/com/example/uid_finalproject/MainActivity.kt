@@ -21,7 +21,8 @@ import com.example.uid_finalproject.ui.screens.SecurityScreen
 import com.example.uid_finalproject.ui.screens.ScheduleScreen
 import com.example.uid_finalproject.ui.screens.EnergyScreen
 import com.example.uid_finalproject.ui.screens.SettingsScreen
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,26 +40,26 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-
+                    val securityViewModel: SecurityViewModel = viewModel()
                     NavHost(
                         navController = navController,
                         startDestination = Routes.HOME
                     ) {
                         composable(Routes.HOME) {
-                            DashboardScreen(navController = navController, viewModel = viewModel)
+                            DashboardScreen(navController = navController, viewModel = viewModel, securityViewModel = securityViewModel)
                         }
 
                         composable(Routes.SECURITY) {
-                            SecurityScreen(navController = navController, viewModel = viewModel)
+                            SecurityScreen(navController = navController, viewModel = securityViewModel)
                         }
                         composable(Routes.SCHEDULE) {
-                            ScheduleScreen(navController = navController)
+                            ScheduleScreen(navController = navController, securityViewModel = securityViewModel)
                         }
                         composable(Routes.ENERGY) {
-                            EnergyScreen(navController = navController, viewModel = viewModel)
+                            EnergyScreen(navController = navController, viewModel = viewModel, securityViewModel = securityViewModel)
                         }
                         composable(Routes.SETTINGS) {
-                            SettingsScreen(navController = navController, viewModel = viewModel)
+                            SettingsScreen(navController = navController, viewModel = viewModel, securityViewModel = securityViewModel)
                         }
                     }
                 }

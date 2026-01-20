@@ -17,12 +17,12 @@ import com.example.uid_finalproject.MainViewModel
 import com.example.uid_finalproject.model.*
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
-
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityScreen(
     navController: NavController,
-    viewModel: MainViewModel = viewModel()
+    viewModel: SecurityViewModel
 ) {
     val entryPoints = viewModel.entryPoints
     val kidsRoomItems = entryPoints.filter { it.isKidsRoom }

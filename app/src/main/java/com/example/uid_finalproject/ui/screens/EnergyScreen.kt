@@ -24,10 +24,10 @@ import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
 import java.io.File
 import java.io.FileOutputStream
-
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnergyScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
+fun EnergyScreen(navController: NavController, viewModel: MainViewModel = viewModel(), securityViewModel: SecurityViewModel) {
     val context = LocalContext.current
 
     val weeklyData = listOf(
@@ -80,9 +80,11 @@ fun EnergyScreen(navController: NavController, viewModel: MainViewModel = viewMo
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                AlertBanner("Alert: Window Open in Kids Room")
+            if (securityViewModel.hasKidsRoomAlert) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AlertBanner("Alert: Window/Door Open in Kids Room")
+                }
             }
 
             item { EnergySummaryCard() }

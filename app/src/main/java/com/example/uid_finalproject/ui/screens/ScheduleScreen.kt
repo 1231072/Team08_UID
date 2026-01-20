@@ -17,12 +17,13 @@ import com.example.uid_finalproject.model.TaskType
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
 import com.example.uid_finalproject.viewmodel.ScheduleViewModel
-
+import com.example.uid_finalproject.viewmodel.SecurityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(
     navController: NavController,
-    viewModel: ScheduleViewModel = viewModel()
+    viewModel: ScheduleViewModel = viewModel(),
+    securityViewModel: SecurityViewModel
 ) {
     val allTasks = viewModel.tasks
 
@@ -70,9 +71,11 @@ fun ScheduleScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                AlertBanner("Alert: Window Open in Kids Room")
+            if (securityViewModel.hasKidsRoomAlert) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AlertBanner("Alert: Window/Door Open in Kids Room")
+                }
             }
 
             item {
