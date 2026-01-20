@@ -18,7 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uid_finalproject.model.ScheduleStatItem
 import com.example.uid_finalproject.model.ScheduleTaskItem
-
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.window.Dialog
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 @Composable
 fun ScheduleStatCard(item: ScheduleStatItem, modifier: Modifier = Modifier) {
     Card(
@@ -45,9 +49,8 @@ fun ScheduleStatCard(item: ScheduleStatItem, modifier: Modifier = Modifier) {
         }
     }
 }
-
 @Composable
-fun ScheduleTaskRow(item: ScheduleTaskItem) {
+fun ScheduleTaskRow(item: ScheduleTaskItem, onCheckClick: () -> Unit) {
     val bgColor = if (item.isCompleted) Color(0xFFF5F5F5) else Color(0xFFFAFAFA)
 
     Card(
@@ -76,9 +79,7 @@ fun ScheduleTaskRow(item: ScheduleTaskItem) {
             }
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
+                modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = item.title,
@@ -87,22 +88,31 @@ fun ScheduleTaskRow(item: ScheduleTaskItem) {
                     color = if (item.isCompleted) Color.Gray else Color.Black
                 )
                 Text(
-                    text = item.timeAndPerson,
+                    text = item.timeAndPerson, // Usa a propriedade helper que criámos
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
             }
 
-            if (item.isCompleted) {
-                Icon(Icons.Default.Check, contentDescription = "Done", tint = Color(0xFF4CAF50))
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(Color.White, RoundedCornerShape(6.dp))
-                        .padding(2.dp)
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.LightGray)
+            IconButton(onClick = onCheckClick) {
+                if (item.isCompleted) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color(0xFF4CAF50), RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = "Done", tint = Color.White, modifier = Modifier.size(18.dp))
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color.Transparent, RoundedCornerShape(8.dp))
+                            .background(Color.White)
+                            .padding(2.dp)
+                            .background(Color(0xFFEEEEEE), RoundedCornerShape(6.dp))
+                    )
                 }
             }
         }
@@ -129,6 +139,55 @@ fun SectionHeaderWithAction(title: String, onAddClick: () -> Unit) {
             colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color(0xFF2962FF))
         ) {
             Text("+", color = Color.White, fontSize = 20.sp)
+        }
+    }
+}
+
+@Composable
+fun AddTaskDialog(
+    onDismiss: () -> Unit,
+    onAdd: (title: String, time: String, person: String, isMed: Boolean) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var person by remember { mutableStateOf("") }
+    var isMedication by remember { mutableStateOf(false) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Add Reminder", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title (e.g. Aspirin)") }, modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(value = time, onValueChange = { time = it }, label = { Text("Time (e.g. 14:00)") }, modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(value = person, onValueChange = { person = it }, label = { Text("Family Member") }, modifier = Modifier.fillMaxWidth())
+
+                // Checkbox "Is Medication"
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(checked = isMedication, onCheckedChange = { isMedication = it })
+                    Text("Is this a medication?")
+                }
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = onDismiss) { Text("Cancel") }
+                    Button(
+                        onClick = { onAdd(title, time, person, isMedication) },
+                        enabled = title.isNotEmpty() && time.isNotEmpty()
+                    ) {
+                        Text("Add")
+                    }
+                }
+            }
         }
     }
 }
