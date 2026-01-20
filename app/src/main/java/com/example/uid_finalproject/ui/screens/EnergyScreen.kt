@@ -1,9 +1,11 @@
 package com.example.uid_finalproject.ui.screens
 
-
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -11,17 +13,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.uid_finalproject.MainViewModel
 import com.example.uid_finalproject.model.*
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnergyScreen(navController: NavController) {
+fun EnergyScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
+    val context = LocalContext.current
 
     val weeklyData = listOf(
         WeeklyBarData("Mon", 0.6f),
@@ -83,14 +90,15 @@ fun EnergyScreen(navController: NavController) {
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Weekly Overview", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Text("87.6 kWh this week", fontSize = 24.sp, modifier = Modifier.padding(vertical = 12.dp))
-
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Weekly Overview", style = MaterialTheme.typography.titleMedium)
+                            FilterButtons(selectedFilter = viewModel.energyFilter, onFilterSelected = { viewModel.energyFilter = it })
+                        }
                         WeeklyBarChart(weeklyData)
 
                         Divider(modifier = Modifier.padding(vertical = 16.dp))
 
-                        Text("Consumption by Room", fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
+                        Text("Consumption by Room", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp))
                         roomConsumption.forEach { room ->
                             RoomConsumptionRow(room)
                         }
@@ -125,12 +133,59 @@ fun EnergyScreen(navController: NavController) {
                         icon = Icons.Default.Bolt,
                         backgroundColor = Color(0xFF2962FF),
                         modifier = Modifier.weight(1f),
-                        onClick = {}
+                        onClick = { 
+                            val report = generateEnergyReport(roomConsumption, topConsumers)
+                            saveReportToFile(context, "energy_report.txt", report)
+                            Toast.makeText(context, "Report saved to energy_report.txt", Toast.LENGTH_SHORT).show()
+                        }
                     )
                 }
             }
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
         }
+    }
+}
+
+@Composable
+fun FilterButtons(selectedFilter: String, onFilterSelected: (String) -> Unit) {
+    val filters = listOf("Real-Time", "Day", "Week", "Month")
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        filters.forEach { filter ->
+            val isSelected = selectedFilter == filter
+            Button(
+                onClick = { onFilterSelected(filter) },
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(filter, fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+fun generateEnergyReport(roomConsumption: List<RoomEnergyItem>, topConsumers: List<EnergyConsumerItem>): String {
+    val builder = StringBuilder()
+    builder.append("Energy Report\n")
+    builder.append("===========\n\n")
+    builder.append("Consumption by Room:\n")
+    for (item in roomConsumption) {
+        builder.append("- ${item.name}: ${item.kwh}\n")
+    }
+    builder.append("\nTop Consumers Today:\n")
+    for (item in topConsumers) {
+        builder.append("- ${item.title}: ${item.kwh} (${item.percent})\n")
+    }
+    return builder.toString()
+}
+
+fun saveReportToFile(context: Context, fileName: String, content: String) {
+    val file = File(context.filesDir, fileName)
+    FileOutputStream(file).use {
+        it.write(content.toByteArray())
     }
 }

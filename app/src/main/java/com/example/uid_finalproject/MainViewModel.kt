@@ -47,6 +47,12 @@ class MainViewModel : ViewModel() {
     )
 
     var showCameraPopup by mutableStateOf(false)
+    var showAllActivities by mutableStateOf(false)
+    var energyFilter by mutableStateOf("Real-Time")
+
+    fun onSeeMoreActivitiesClick() {
+        showAllActivities = !showAllActivities
+    }
 
     fun toggleEntryPoint(id: Int) {
         val index = entryPoints.indexOfFirst { it.id == id }
@@ -83,6 +89,13 @@ class MainViewModel : ViewModel() {
             // Optionally, revert the changes when night mode is deactivated
             statusItems[1] = statusItems[1].copy(value = "22°C") // Assuming default is 22
             activities.add(0, RecentActivityItem("Night Mode Deactivated", "Just now", Icons.Outlined.Lightbulb, Color(0xFFE0E0E0), Color(0xFF000000)))
+        }
+    }
+
+    fun lockAllDoors() {
+        entryPoints.forEachIndexed { index, item ->
+            val newState = if (item.name.contains("Window")) EntryState.CLOSED else EntryState.LOCKED
+            entryPoints[index] = item.copy(state = newState)
         }
     }
 }

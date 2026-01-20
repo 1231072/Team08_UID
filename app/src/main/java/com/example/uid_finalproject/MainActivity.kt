@@ -3,6 +3,7 @@ package com.example.uid_finalproject
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +20,9 @@ import com.example.uid_finalproject.ui.screens.SettingsScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val viewModel: MainViewModel by viewModels()
+        
         setContent {
             MaterialTheme {
                 Surface(
@@ -32,11 +36,11 @@ class MainActivity : ComponentActivity() {
                         startDestination = Routes.HOME
                     ) {
                         composable(Routes.HOME) {
-                            DashboardScreen(navController = navController)
+                            DashboardScreen(navController = navController, viewModel = viewModel)
                         }
 
                         composable(Routes.SECURITY) {
-                            SecurityScreen(navController = navController)
+                            SecurityScreen(navController = navController, viewModel = viewModel)
                         }
                         composable(Routes.SCHEDULE) {
                             ScheduleScreen(navController = navController)

@@ -106,8 +106,17 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
             }
 
             // activity list
-            items(activities) { activity ->
+            val itemsToShow = if (viewModel.showAllActivities) activities else activities.take(4)
+            items(itemsToShow) { activity ->
                 ActivityRow(activity)
+            }
+
+            if (activities.size > 4) {
+                item {
+                    TextButton(onClick = { viewModel.onSeeMoreActivitiesClick() }) {
+                        Text(if (viewModel.showAllActivities) "See Less" else "See More")
+                    }
+                }
             }
 
             item {
@@ -119,7 +128,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        QuickActionCard(quickActions[0], modifier = Modifier.weight(1f), onClick = {})
+                        QuickActionCard(quickActions[0], modifier = Modifier.weight(1f), onClick = { viewModel.lockAllDoors() })
                         QuickActionCard(
                             item = quickActions[1],
                             modifier = Modifier.weight(1f),
@@ -138,7 +147,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
 
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         QuickActionCard(quickActions[2], modifier = Modifier.weight(1f), onClick = {})
-                        QuickActionCard(quickActions[3], modifier = Modifier.weight(1f), onClick = {})
+                        QuickActionCard(quickActions[3], modifier = Modifier.weight(1f), onClick = { navController.navigate(Routes.SCHEDULE) })
                     }
                 }
             }
