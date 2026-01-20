@@ -24,30 +24,23 @@ fun ScheduleScreen(
     navController: NavController,
     viewModel: ScheduleViewModel = viewModel()
 ) {
-    // Buscar lista completa
     val allTasks = viewModel.tasks
 
-    // 1. Filtro: Secção Vermelha (Apenas Meds não completados)
     val urgentMedications = allTasks.filter {
         it.type == TaskType.MEDICATION && !it.isCompleted
     }
 
-    // 2. Filtro: Upcoming (Tudo o que não está completado)
-    // O requisito diz "Every medication should be both on the upcoming and Medication Reminders"
-    // Portanto, Upcoming mostra TUDO o que falta fazer.
+
     val upcomingTasks = allTasks.filter { !it.isCompleted }
 
-    // 3. Filtro: Completados Hoje
     val completedTasks = allTasks.filter { it.isCompleted }
 
-    // Stats Dinâmicos
     val stats = listOf(
         ScheduleStatItem(viewModel.medicationCount.toString(), "Medications", Color(0xFFE3F2FD)),
         ScheduleStatItem(viewModel.appointmentCount.toString(), "Appointments", Color(0xFFF3E5F5)),
         ScheduleStatItem(viewModel.completedCount.toString(), "Completed", Color(0xFFE8F5E9))
     )
 
-    // Mostrar Popup se necessário
     if (viewModel.showAddDialog) {
         AddTaskDialog(
             onDismiss = { viewModel.showAddDialog = false },
@@ -77,13 +70,11 @@ fun ScheduleScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // ... (Alert Banner igual)
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 AlertBanner("Alert: Window Open in Kids Room")
             }
 
-            // Stats Row Dinâmica
             item {
                 SectionHeader("Today's Schedule")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -93,7 +84,6 @@ fun ScheduleScreen(
                 }
             }
 
-            // Secção Vermelha (Medications)
             if (urgentMedications.isNotEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +97,7 @@ fun ScheduleScreen(
                                 Text(
                                     text = "Medication Reminders",
                                     color = Color(0xFFD32F2F),
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, // <--- ADICIONA "fontWeight ="
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                     modifier = Modifier.padding(start = 8.dp)
                                 )                            }
                             Spacer(modifier = Modifier.height(8.dp))
@@ -123,10 +113,9 @@ fun ScheduleScreen(
                 }
             }
 
-            // Upcoming (Botão + funcional)
             item {
                 SectionHeaderWithAction("Upcoming") {
-                    viewModel.showAddDialog = true // Abre o popup
+                    viewModel.showAddDialog = true
                 }
             }
 
@@ -141,7 +130,6 @@ fun ScheduleScreen(
                 }
             }
 
-            // Completed Today
             if (completedTasks.isNotEmpty()) {
                 item {
                     Row(
@@ -160,7 +148,7 @@ fun ScheduleScreen(
                 items(completedTasks) { task ->
                     ScheduleTaskRow(
                         item = task,
-                        onCheckClick = { viewModel.toggleTask(task.id) } // Permite "desfazer" a conclusão
+                        onCheckClick = { viewModel.toggleTask(task.id) }
                     )
                 }
             }

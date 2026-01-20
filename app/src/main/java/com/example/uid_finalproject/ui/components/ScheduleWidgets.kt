@@ -88,7 +88,7 @@ fun ScheduleTaskRow(item: ScheduleTaskItem, onCheckClick: () -> Unit) {
                     color = if (item.isCompleted) Color.Gray else Color.Black
                 )
                 Text(
-                    text = item.timeAndPerson, // Usa a propriedade helper que criámos
+                    text = item.timeAndPerson,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -169,7 +169,6 @@ fun AddTaskDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(value = person, onValueChange = { person = it }, label = { Text("Family Member") }, modifier = Modifier.fillMaxWidth())
 
-                // Checkbox "Is Medication"
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
