@@ -13,23 +13,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.uid_finalproject.MainViewModel
 import com.example.uid_finalproject.model.*
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
-import com.example.uid_finalproject.viewmodel.SecurityViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityScreen(
     navController: NavController,
-    viewModel: SecurityViewModel = viewModel()
+    viewModel: MainViewModel = viewModel()
 ) {
     val entryPoints = viewModel.entryPoints
     val kidsRoomItems = entryPoints.filter { it.isKidsRoom }
     val otherEntryPoints = entryPoints.filter { !it.isKidsRoom }
 
-    val doorsLockedStr = "${viewModel.doorsLockedCount} of ${viewModel.totalDoors}"
-    val windowsOpenStr = "${viewModel.windowsOpenCount} of ${viewModel.totalWindows}"
+    val doorsLockedCount = entryPoints.count { it.name.contains("Door") && (it.state == EntryState.LOCKED || it.state == EntryState.CLOSED) }
+    val totalDoors = entryPoints.count { it.name.contains("Door") }
+    val windowsOpenCount = entryPoints.count { it.name.contains("Window") && (it.state == EntryState.OPEN || it.state == EntryState.CURRENTLY_OPEN) }
+    val totalWindows = entryPoints.count { it.name.contains("Window") }
+
+    val doorsLockedStr = "$doorsLockedCount of $totalDoors"
+    val windowsOpenStr = "$windowsOpenCount of $totalWindows"
 
     val securityStatusItems = listOf(
         SecurityStatusCount("Doors Locked", doorsLockedStr, Icons.Outlined.Lock, Color(0xFFE8F5E9), Color(0xFF2E7D32)),
@@ -66,7 +71,10 @@ fun SecurityScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            if (viewModel.hasKidsRoomAlert) {
+            val kidsRoomAlerts = entryPoints.count { it.isKidsRoom && (it.state == EntryState.OPEN || it.state == EntryState.CURRENTLY_OPEN) }
+            val hasKidsRoomAlert = kidsRoomAlerts > 0
+
+            if (hasKidsRoomAlert) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                     AlertBanner("Alert: Window/Door Open in Kids Room")
@@ -76,9 +84,9 @@ fun SecurityScreen(
             item { SectionHeader("Security Status") }
 
             item {
-                if (viewModel.hasKidsRoomAlert) {
+                if (hasKidsRoomAlert) {
                     SecurityAlertCard(
-                        title = "${viewModel.kidsRoomAlerts} Alert(s)",
+                        title = "$kidsRoomAlerts Alert(s)",
                         message = "Kids room entry point open",
                         icon = Icons.Default.Warning
                     )
@@ -137,7 +145,12 @@ fun SecurityScreen(
                         icon = Icons.Default.Lock,
                         backgroundColor = Color(0xFFD32F2F),
                         modifier = Modifier.weight(1f),
-                        onClick = { viewModel.lockAllDoors() }
+                        onClick = { 
+                            entryPoints.forEachIndexed { index, item ->
+                                val newState = if (item.name.contains("Window")) EntryState.CLOSED else EntryState.LOCKED
+                                entryPoints[index] = item.copy(state = newState)
+                            }
+                        }
                     )
                     LargeActionButton(
                         text = "View All Cameras",

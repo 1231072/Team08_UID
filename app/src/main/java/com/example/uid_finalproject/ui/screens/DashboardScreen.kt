@@ -8,53 +8,31 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.uid_finalproject.model.HomeStatusItem
+import com.example.uid_finalproject.MainViewModel
 import com.example.uid_finalproject.model.QuickActionItem
-import com.example.uid_finalproject.model.RecentActivityItem
-import com.example.uid_finalproject.model.RoomItem
 import com.example.uid_finalproject.ui.components.*
 import com.example.uid_finalproject.ui.navigation.Routes
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
     // mocked data
 
-    var isNightModeActive by remember { mutableStateOf(false) }
+    val rooms = viewModel.rooms
+    val statusItems = viewModel.statusItems
+    val activities = viewModel.activities
 
     // Podemos usar o snackbar para dar feedback visual na apresentação
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
-    val statusItems = listOf(
-        HomeStatusItem("Security", "Active", Icons.Outlined.Security, Color(0xFFE8F5E9), Color(0xFF2E7D32)),
-        HomeStatusItem("Temperature", "22°C", Icons.Outlined.Thermostat, Color(0xFFE3F2FD), Color(0xFF1565C0)),
-        HomeStatusItem("Lights On", "5 of 12", Icons.Outlined.Lightbulb, Color(0xFFFFFDE7), Color(0xFFF9A825)),
-        HomeStatusItem("Energy", "Normal", Icons.Outlined.Bolt, Color(0xFFF3E5F5), Color(0xFF6A1B9A))
-    )
-
-    val rooms = listOf(
-        RoomItem("Kids Room", "22°C • Light: 60%", 0, false),
-        RoomItem("Master Bedroom", "20°C • Light: Off", 0, true),
-        RoomItem("Teen Room", "23°C • Light: 80%", 0, true),
-        RoomItem("Grandparents Room", "24°C • Light: 40%", 0, true),
-        RoomItem("Living Room", "22°C • Light: 100%", 0, true),
-    )
-    val activities = listOf(
-        RecentActivityItem("Window opened in Kids Room", "2 minutes ago", Icons.Default.Notifications, Color(0xFFFFEBEE), Color(0xFFD32F2F)),
-        RecentActivityItem("Temperature adjusted in Living Room", "15 minutes ago", Icons.Default.Thermostat, Color(0xFFE3F2FD), Color(0xFF1976D2)),
-        RecentActivityItem("Grandma took medication", "1 hour ago", Icons.Default.Person, Color(0xFFE8F5E9), Color(0xFF388E3C))
-    )
 
     // NOVOS DADOS: Ações Rápidas
     val quickActions = listOf(
@@ -145,11 +123,11 @@ fun DashboardScreen(navController: NavController) {
                         QuickActionCard(
                             item = quickActions[1],
                             modifier = Modifier.weight(1f),
-                            isActive = isNightModeActive,
+                            isActive = viewModel.isNightModeActive,
                             onClick = {
-                                isNightModeActive = !isNightModeActive // Inverte o estado
+                                viewModel.toggleNightMode()
                                 scope.launch {
-                                    val msg = if (isNightModeActive)
+                                    val msg = if (viewModel.isNightModeActive)
                                         "Night Mode Activated: Lights off & Doors locked"
                                     else "Night Mode Deactivated"
                                     snackbarHostState.showSnackbar(msg)

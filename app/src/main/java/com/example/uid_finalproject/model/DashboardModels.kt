@@ -13,10 +13,16 @@ data class HomeStatusItem(
 
 data class RoomItem(
     val name: String,
-    val info: String,
+    var info: String,
     val iconRes: Int,
-    val isOnline: Boolean
-)
+    val isOnline: Boolean,
+    var temperature: Int,
+    var areDoorsClosed: Boolean,
+    var areWindowsClosed: Boolean
+) {
+    val computedInfo: String
+        get() = "${temperature}°C • ${if (areDoorsClosed && areWindowsClosed) "All Closed" else "Some Open"}"
+}
 
 data class ActivityItem(
     val title: String,

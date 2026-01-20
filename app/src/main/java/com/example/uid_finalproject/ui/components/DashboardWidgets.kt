@@ -82,7 +82,7 @@ fun RoomListItem(room: RoomItem) {
 
             Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
                 Text(text = room.name, fontWeight = FontWeight.Bold)
-                Text(text = room.info, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(text = room.computedInfo, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
             }
 
             Box(
