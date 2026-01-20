@@ -20,6 +20,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private val apiService = ApiService.create()
+    var isEcoModeActive by mutableStateOf(false)
+        private set
+    private val savedTemperatures = mutableMapOf<String, Int>()
 
     val rooms = mutableStateListOf(
         RoomItem("Kids Room", 0, false, 22, 60, areDoorsClosed = false, areWindowsClosed = false),
@@ -103,9 +106,7 @@ class MainViewModel : ViewModel() {
             try {
                 val newUser = NewUser(name, "")
                 val response = apiService.addUser(newUser)
-                if (response.isSuccessful && response.body() != null) {
                     familyMembers.add(FamilyMember(name, emoji))
-                }
             } catch (e: Exception) {
             }
         }
@@ -209,5 +210,40 @@ class MainViewModel : ViewModel() {
 
     fun onThemeChanged(dark: Boolean) {
         isDarkTheme = dark
+    }
+
+    fun toggleEcoMode() {
+        val energyItemIndex = 3
+
+        if (isEcoModeActive) {
+            for (i in rooms.indices) {
+                val roomName = rooms[i].name
+                val originalTemp = savedTemperatures[roomName] ?: rooms[i].temperature
+                rooms[i] = rooms[i].copy(temperature = originalTemp)
+            }
+            savedTemperatures.clear()
+            if (energyItemIndex < statusItems.size) {
+                statusItems[energyItemIndex] = statusItems[energyItemIndex].copy(
+                    value = "Normal",
+                )
+            }
+
+            isEcoModeActive = false
+
+        } else {
+
+            for (i in rooms.indices) {
+                savedTemperatures[rooms[i].name] = rooms[i].temperature
+                rooms[i] = rooms[i].copy(temperature = 18)
+            }
+
+            if (energyItemIndex < statusItems.size) {
+                statusItems[energyItemIndex] = statusItems[energyItemIndex].copy(
+                    value = "Eco",
+                )
+            }
+
+            isEcoModeActive = true
+        }
     }
 }

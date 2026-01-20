@@ -135,7 +135,10 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        QuickActionCard(quickActions[0], modifier = Modifier.weight(1f), onClick = { viewModel.lockAllDoors() })
+                        QuickActionCard(
+                            quickActions[0],
+                            modifier = Modifier.weight(1f),
+                            onClick = { viewModel.lockAllDoors() })
                         QuickActionCard(
                             item = quickActions[1],
                             modifier = Modifier.weight(1f),
@@ -153,14 +156,32 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
                     }
 
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        QuickActionCard(quickActions[2], modifier = Modifier.weight(1f), onClick = {})
-                        QuickActionCard(quickActions[3], modifier = Modifier.weight(1f), onClick = { navController.navigate(Routes.SCHEDULE) })
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            QuickActionCard(
+                                item = quickActions[2],
+                                modifier = Modifier.weight(1f),
+                                isActive = viewModel.isEcoModeActive,
+                                onClick = {
+                                    viewModel.toggleEcoMode()
+
+                                    scope.launch {
+                                        val message = if (viewModel.isEcoModeActive)
+                                            "Eco Mode Activated: Temperature set to 18°C"
+                                        else
+                                            "Eco Mode Deactivated: Temperatures restored"
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+                            )
+                            QuickActionCard(
+                                quickActions[3],
+                                modifier = Modifier.weight(1f),
+                                onClick = { navController.navigate(Routes.SCHEDULE) })
+                        }
                     }
                 }
-            }
-
-
-            item { Spacer(modifier = Modifier.height(32.dp)) }
         }
-    }
-}
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+        }
+}}
