@@ -3,7 +3,7 @@ package com.example.uid_finalproject.model
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
-// model for the top cards
+
 data class SecurityStatusCount(
     val title: String,
     val count: String,
@@ -12,7 +12,7 @@ data class SecurityStatusCount(
     val contentColor: Color
 )
 
-// model for doors and windows
+
 data class EntryPointItem(
     val id: Int,
     val name: String,
@@ -28,7 +28,7 @@ enum class EntryState(val label: String, val color: Color, val textColor: Color)
     CURRENTLY_OPEN("Currently open", Color(0xFFFFEBEE), Color(0xFFD32F2F)) // Texto vermelho fundo rosa (ex: alerta)
 }
 
-// model for sensors of movement
+
 data class MotionSensorItem(
     val location: String,
     val statusText: String,

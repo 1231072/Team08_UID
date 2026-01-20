@@ -119,7 +119,7 @@ fun SettingSliderRow(title: String, value: Float, valueText: String, onValueChan
 @Composable
 fun AppearanceSelector(isDarkTheme: Boolean, onThemeChange: (Boolean) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        // Light Mode
+       //light mode
         Card(
             modifier = Modifier.weight(1f).height(80.dp).clickable { onThemeChange(false) },
             border = if (!isDarkTheme) BorderStroke(2.dp, Color(0xFF2962FF)) else null,

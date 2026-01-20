@@ -9,11 +9,11 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-// --- User Models ---
+
 data class User(val id: Int, val name: String, val email: String)
 data class NewUser(val name: String, val email: String)
 
-// --- Sensor Models ---
+
 data class SensorData(val type: String, val value: String, val unit: String)
 data class SensorUpdateResponse(val id: Int, val type: String, val value: String, val unit: String)
 
@@ -26,7 +26,7 @@ interface ApiService {
     suspend fun addUser(@Body newUser: NewUser): Response<User>
 
     // --- Sensor Endpoint ---
-    @POST("posts") // Using /posts as a stand-in for a sensor endpoint
+    @POST("posts")
     suspend fun postSensorData(@Body sensorData: SensorData): Response<SensorUpdateResponse>
 
     companion object {

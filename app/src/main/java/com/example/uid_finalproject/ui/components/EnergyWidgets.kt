@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uid_finalproject.model.*
 
-// 1. Cartão de Resumo com Gráfico de Linha (Canvas desenhado à mão)
+
 @Composable
 fun EnergySummaryCard() {
     Card(
@@ -46,13 +46,13 @@ fun EnergySummaryCard() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Gráfico de Linha Simulado
+
             Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
 
-                    // Pontos do gráfico (simulados)
+
                     val path = Path().apply {
                         moveTo(0f, height * 0.8f)
                         cubicTo(width * 0.2f, height * 0.9f, width * 0.3f, height * 0.5f, width * 0.4f, height * 0.4f)
@@ -60,21 +60,21 @@ fun EnergySummaryCard() {
                         lineTo(width, height * 0.6f)
                     }
 
-                    // Desenha a linha azul
+
                     drawPath(
                         path = path,
                         color = Color(0xFF448AFF),
                         style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round)
                     )
 
-                    // Desenha os pontinhos (círculos)
+
                     drawCircle(Color(0xFF448AFF), radius = 10f, center = Offset(0f, height * 0.8f))
                     drawCircle(Color(0xFF448AFF), radius = 10f, center = Offset(width * 0.4f, height * 0.4f))
                     drawCircle(Color(0xFF448AFF), radius = 10f, center = Offset(width * 0.8f, height * 0.2f))
                     drawCircle(Color(0xFF448AFF), radius = 10f, center = Offset(width, height * 0.6f))
                 }
 
-                // Labels do eixo X
+
                 Row(
                     modifier = Modifier.fillMaxSize().align(Alignment.BottomCenter),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -89,7 +89,7 @@ fun EnergySummaryCard() {
     }
 }
 
-// 2. Gráfico de Barras (Weekly)
+
 @Composable
 fun WeeklyBarChart(data: List<WeeklyBarData>) {
     Row(
@@ -99,11 +99,11 @@ fun WeeklyBarChart(data: List<WeeklyBarData>) {
     ) {
         data.forEach { item ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // A barra em si
+
                 Box(
                     modifier = Modifier
                         .width(24.dp)
-                        .fillMaxHeight(item.value) // Altura baseada no valor (0.0 a 1.0)
+                        .fillMaxHeight(item.value)
                         .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                         .background(if(item.isSelected) Color(0xFF6200EA) else Color(0xFF9575CD))
                 )
@@ -114,7 +114,7 @@ fun WeeklyBarChart(data: List<WeeklyBarData>) {
     }
 }
 
-// 3. Linha de Consumo por Quarto
+
 @Composable
 fun RoomConsumptionRow(item: RoomEnergyItem) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
@@ -135,7 +135,7 @@ fun RoomConsumptionRow(item: RoomEnergyItem) {
     }
 }
 
-// 4. Item Top Consumidor (Ícone + Texto)
+
 @Composable
 fun ConsumerRow(item: EnergyConsumerItem) {
     Row(
@@ -146,7 +146,7 @@ fun ConsumerRow(item: EnergyConsumerItem) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Ícone quadrado
+
         Box(
             modifier = Modifier
                 .size(48.dp)
@@ -165,7 +165,7 @@ fun ConsumerRow(item: EnergyConsumerItem) {
     }
 }
 
-// 5. Item de Automação (Switch)
+
 @Composable
 fun AutomationRow(item: EnergyAutomationItem) {
     Card(

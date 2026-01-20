@@ -53,7 +53,6 @@ class MainViewModel : ViewModel() {
         EntryPointItem(14, "Grandparents Window", EntryState.CLOSED, Icons.Outlined.Window)
     )
 
-    // Settings states
     val familyMembers = mutableStateListOf(
         FamilyMember("Emma (5)", "👧"),
         FamilyMember("Alex (14)", "👦"),
@@ -95,7 +94,6 @@ class MainViewModel : ViewModel() {
                 loggedInUser = user.name
                 userEmail = user.email
             } catch (e: Exception) {
-                // Handle error
             }
         }
     }
@@ -103,13 +101,12 @@ class MainViewModel : ViewModel() {
     fun addFamilyMember(name: String, emoji: String) {
         viewModelScope.launch {
             try {
-                val newUser = NewUser(name, "") // The API doesn't use the email, so we can leave it empty
+                val newUser = NewUser(name, "")
                 val response = apiService.addUser(newUser)
                 if (response.isSuccessful && response.body() != null) {
                     familyMembers.add(FamilyMember(name, emoji))
                 }
             } catch (e: Exception) {
-                // Handle error
             }
         }
     }
@@ -125,7 +122,6 @@ class MainViewModel : ViewModel() {
                     rooms[roomIndex] = rooms[roomIndex].copy(temperature = newTemperature)
                 }
             } catch (e: Exception) {
-                // Handle error
             }
         }
     }
@@ -141,7 +137,6 @@ class MainViewModel : ViewModel() {
                     rooms[roomIndex] = rooms[roomIndex].copy(lightIntensity = newIntensity)
                 }
             } catch (e: Exception) {
-                // Handle error
             }
         }
     }
@@ -182,8 +177,7 @@ class MainViewModel : ViewModel() {
             statusItems[1] = statusItems[1].copy(value = "20°C")
             activities.add(0, RecentActivityItem("Night Mode Activated", "Just now", Icons.Outlined.Lightbulb, Color(0xFFFFF9C4), Color(0xFFFBC02D)))
         } else {
-            // Optionally, revert the changes when night mode is deactivated
-            statusItems[1] = statusItems[1].copy(value = "22°C") // Assuming default is 22
+            statusItems[1] = statusItems[1].copy(value = "22°C")
             activities.add(0, RecentActivityItem("Night Mode Deactivated", "Just now", Icons.Outlined.Lightbulb, Color(0xFFE0E0E0), Color(0xFF000000)))
         }
     }
@@ -196,9 +190,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun logout() {
-        // Reset all necessary states
         isNightModeActive = false
-        // ... other states
     }
 
     fun onNotificationSettingChanged(item: SettingToggleItem, isChecked: Boolean) {

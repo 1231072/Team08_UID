@@ -22,7 +22,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.uid_finalproject.model.EntryState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-// alert card
+
 @Composable
 fun SecurityAlertCard(title: String, message: String, icon: ImageVector) {
     Card(
@@ -54,7 +54,7 @@ fun SecurityAlertCard(title: String, message: String, icon: ImageVector) {
     }
 }
 
-// status card
+
 @Composable
 fun SecurityStatusSquare(item: SecurityStatusCount, modifier: Modifier = Modifier) {
     Column(
@@ -72,18 +72,18 @@ fun SecurityStatusSquare(item: SecurityStatusCount, modifier: Modifier = Modifie
     }
 }
 
-// entry points
+
 @Composable
 fun EntryPointRow(item: EntryPointItem, onStatusClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp) // Reduzi um pouco o padding vertical
+            .padding(vertical = 6.dp)
             .background(Color(0xFFFAFAFA), RoundedCornerShape(8.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Ícone muda de cor se estiver aberto
+
         val iconColor = if(item.state == EntryState.OPEN || item.state == EntryState.CURRENTLY_OPEN) Color.Red else Color(0xFF4CAF50)
 
         Icon(imageVector = item.icon, contentDescription = null, tint = iconColor)
@@ -93,11 +93,11 @@ fun EntryPointRow(item: EntryPointItem, onStatusClick: () -> Unit) {
             modifier = Modifier.weight(1f).padding(start = 16.dp)
         )
 
-        // Chip Clicável
+
         Surface(
             color = item.state.color,
             shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.clickable { onStatusClick() } // <--- CLIQUE AQUI
+            modifier = Modifier.clickable { onStatusClick() }
         ) {
             Text(
                 text = item.state.label,
@@ -153,7 +153,7 @@ fun SecuritySafeCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)) // Verde suave
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -179,7 +179,7 @@ fun CameraDialog(onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxSize().background(Color.Black),
                 contentAlignment = Alignment.Center
             ) {
-                // Simulação de video
+
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         imageVector = Icons.Default.PlayCircle,

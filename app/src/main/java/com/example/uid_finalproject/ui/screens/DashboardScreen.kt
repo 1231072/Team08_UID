@@ -24,17 +24,16 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
-    // mocked data
+
 
     val rooms = viewModel.rooms
     val statusItems = viewModel.statusItems
     val activities = viewModel.activities
 
-    // Podemos usar o snackbar para dar feedback visual na apresentação
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // NOVOS DADOS: Ações Rápidas
+
     val quickActions = listOf(
         QuickActionItem("Lock All", Icons.Outlined.Security, Color(0xFF1976D2), Color(0xFFE3F2FD)),
         QuickActionItem("Night Mode", Icons.Outlined.Lightbulb, Color(0xFFFBC02D), Color(0xFFFFF9C4)),
@@ -70,14 +69,14 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            // alert
+
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 AlertBanner("Alert: Window Open in Kids Room")
             }
             item { SectionHeader("Home Status") }
 
-            // status grid
+
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -91,7 +90,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
                 }
             }
 
-            // room
+
             item { SectionHeader("Rooms") }
 
             items(rooms) { room ->
@@ -113,7 +112,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
                 SectionHeader("Recent Activity")
             }
 
-            // activity list
+
             val itemsToShow = if (viewModel.showAllActivities) activities else activities.take(4)
             items(itemsToShow) { activity ->
                 ActivityRow(activity)
@@ -132,7 +131,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
                 SectionHeader("Quick Actions")
             }
 
-            // quick actions
+
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

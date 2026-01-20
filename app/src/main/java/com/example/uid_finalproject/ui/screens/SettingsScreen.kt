@@ -136,7 +136,7 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel = view
                 Spacer(modifier = Modifier.height(16.dp))
                 SignOutButton(onClick = {
                     viewModel.logout()
-                    navController.navigate(Routes.HOME) { // Or to a login screen
+                    navController.navigate(Routes.HOME) {
                         popUpTo(Routes.HOME) { inclusive = true }
                     }
                 })

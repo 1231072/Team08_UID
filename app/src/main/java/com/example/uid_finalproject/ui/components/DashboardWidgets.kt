@@ -27,7 +27,7 @@ import com.example.uid_finalproject.model.QuickActionItem
 import com.example.uid_finalproject.model.RecentActivityItem
 import com.example.uid_finalproject.model.RoomItem
 
-// red altert
+
 @Composable
 fun AlertBanner(message: String) {
     Row(
@@ -47,7 +47,7 @@ fun AlertBanner(message: String) {
     }
 }
 
-// status cards
+
 @Composable
 fun StatusCard(item: HomeStatusItem, modifier: Modifier = Modifier) {
     Column(
@@ -65,7 +65,7 @@ fun StatusCard(item: HomeStatusItem, modifier: Modifier = Modifier) {
     }
 }
 
-// bedroom list item
+
 @Composable
 fun RoomListItem(
     room: RoomItem,
@@ -104,7 +104,7 @@ fun RoomListItem(
 
             AnimatedVisibility(visible = expanded) {
                 Column(modifier = Modifier.padding(top = 16.dp)) {
-                    // Temperature Slider
+
                     Text("Temperature", fontWeight = FontWeight.Medium)
                     Slider(
                         value = room.temperature.toFloat(),
@@ -114,7 +114,7 @@ fun RoomListItem(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Light Intensity Slider
+
                     Text("Light Intensity", fontWeight = FontWeight.Medium)
                     Slider(
                         value = room.lightIntensity.toFloat(),
@@ -129,7 +129,7 @@ fun RoomListItem(
     }
 }
 
-// header
+
 @Composable
 fun SectionHeader(title: String) {
     Text(
@@ -140,7 +140,7 @@ fun SectionHeader(title: String) {
     )
 }
 
-// recent activity
+
 @Composable
 fun ActivityRow(item: RecentActivityItem) {
     Row(
@@ -178,14 +178,14 @@ fun ActivityRow(item: RecentActivityItem) {
     }
 }
 
-// quick action button
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickActionCard(
     item: QuickActionItem,
     modifier: Modifier = Modifier,
-    isActive: Boolean = false, // Novo: controla se o modo está ligado
-    onClick: () -> Unit        // Novo: a ação que acontece ao clicar
+    isActive: Boolean = false,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = modifier
