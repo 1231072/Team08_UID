@@ -1,12 +1,19 @@
 package com.example.uid_finalproject.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,36 +67,64 @@ fun StatusCard(item: HomeStatusItem, modifier: Modifier = Modifier) {
 
 // bedroom list item
 @Composable
-fun RoomListItem(room: RoomItem) {
+fun RoomListItem(
+    room: RoomItem,
+    onTemperatureChange: (Int) -> Unit,
+    onLightIntensityChange: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable { expanded = !expanded },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xFFE0E0E0), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color(0xFFE0E0E0), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {}
+
+                Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+                    Text(text = room.name, fontWeight = FontWeight.Bold)
+                    Text(text = room.subtitle, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Expand or collapse room details"
+                )
             }
 
-            Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
-                Text(text = room.name, fontWeight = FontWeight.Bold)
-                Text(text = room.computedInfo, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-            }
+            AnimatedVisibility(visible = expanded) {
+                Column(modifier = Modifier.padding(top = 16.dp)) {
+                    // Temperature Slider
+                    Text("Temperature", fontWeight = FontWeight.Medium)
+                    Slider(
+                        value = room.temperature.toFloat(),
+                        onValueChange = { onTemperatureChange(it.toInt()) },
+                        valueRange = 0f..40f,
+                        steps = 40,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .background(if (room.isOnline) Color.Green else Color.Red, CircleShape)
-            )
+                    // Light Intensity Slider
+                    Text("Light Intensity", fontWeight = FontWeight.Medium)
+                    Slider(
+                        value = room.lightIntensity.toFloat(),
+                        onValueChange = { onLightIntensityChange(it.toInt()) },
+                        valueRange = 0f..100f,
+                        steps = 10,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
         }
     }
 }

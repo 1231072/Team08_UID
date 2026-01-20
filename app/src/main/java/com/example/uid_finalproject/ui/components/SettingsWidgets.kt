@@ -27,7 +27,7 @@ import com.example.uid_finalproject.model.SettingToggleItem
 import androidx.compose.material.icons.automirrored.filled.*
 
 @Composable
-fun FamilyProfileCard() {
+fun FamilyProfileCard(name: String, email: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA)),
@@ -43,12 +43,12 @@ fun FamilyProfileCard() {
                     .background(Color(0xFFE3F2FD), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Groups, contentDescription = null, tint = Color(0xFF1976D2))
+                Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF1976D2))
             }
 
             Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
-                Text(text = "Johnson Family", fontWeight = FontWeight.Bold)
-                Text(text = "5 members", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(text = name, fontWeight = FontWeight.Bold)
+                Text(text = email, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
             }
 
             Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
@@ -76,7 +76,7 @@ fun FamilyMemberCard(member: FamilyMember, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SettingSwitchRow(item: SettingToggleItem) {
+fun SettingSwitchRow(item: SettingToggleItem, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,12 +90,12 @@ fun SettingSwitchRow(item: SettingToggleItem) {
                 Text(text = item.subtitle, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
             }
         }
-        Switch(checked = item.isChecked, onCheckedChange = {})
+        Switch(checked = item.isChecked, onCheckedChange = onCheckedChange)
     }
 }
 
 @Composable
-fun SettingSliderRow(title: String, value: Float, valueText: String) {
+fun SettingSliderRow(title: String, value: Float, valueText: String, onValueChange: (Float) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -106,7 +106,7 @@ fun SettingSliderRow(title: String, value: Float, valueText: String) {
         }
         Slider(
             value = value,
-            onValueChange = {},
+            onValueChange = onValueChange,
             colors = SliderDefaults.colors(
                 thumbColor = Color.Black,
                 activeTrackColor = Color.Black,
@@ -117,44 +117,48 @@ fun SettingSliderRow(title: String, value: Float, valueText: String) {
 }
 
 @Composable
-fun AppearanceSelector() {
+fun AppearanceSelector(isDarkTheme: Boolean, onThemeChange: (Boolean) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        // Light Mode (Selecionado)
-        OutlinedCard(
-            modifier = Modifier.weight(1f).height(80.dp),
-            border = BorderStroke(2.dp, Color(0xFF2962FF)),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+        // Light Mode
+        Card(
+            modifier = Modifier.weight(1f).height(80.dp).clickable { onThemeChange(false) },
+            border = if (!isDarkTheme) BorderStroke(2.dp, Color(0xFF2962FF)) else null,
+            colors = CardDefaults.cardColors(containerColor = if (!isDarkTheme) Color.White else Color(0xFFF5F5F5))
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Icon(Icons.Outlined.WbSunny, contentDescription = null, tint = Color(0xFF2962FF))
-                Text("Light Mode", fontWeight = FontWeight.Bold, color = Color(0xFF2962FF))
+                val color = if (!isDarkTheme) Color(0xFF2962FF) else Color.Gray
+                Icon(Icons.Outlined.WbSunny, contentDescription = null, tint = color)
+                Text("Light Mode", fontWeight = if (!isDarkTheme) FontWeight.Bold else FontWeight.Medium, color = color)
             }
         }
 
+        // Dark Mode
         Card(
-            modifier = Modifier.weight(1f).height(80.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+            modifier = Modifier.weight(1f).height(80.dp).clickable { onThemeChange(true) },
+            border = if (isDarkTheme) BorderStroke(2.dp, Color(0xFF2962FF)) else null,
+            colors = CardDefaults.cardColors(containerColor = if (isDarkTheme) Color.White else Color(0xFFF5F5F5))
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Icon(Icons.Outlined.DarkMode, contentDescription = null, tint = Color.Gray)
-                Text("Dark Mode", fontWeight = FontWeight.Medium, color = Color.Gray)
+                val color = if (isDarkTheme) Color(0xFF2962FF) else Color.Gray
+                Icon(Icons.Outlined.DarkMode, contentDescription = null, tint = color)
+                Text("Dark Mode", fontWeight = if (isDarkTheme) FontWeight.Bold else FontWeight.Medium, color = color)
             }
         }
     }
 }
 
 @Composable
-fun SettingLinkRow(text: String) {
+fun SettingLinkRow(text: String, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA)),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -169,9 +173,9 @@ fun SettingLinkRow(text: String) {
 }
 
 @Composable
-fun SignOutButton() {
+fun SignOutButton(onClick: () -> Unit) {
     Button(
-        onClick = {},
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth().height(50.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFEBEE)),
         shape = RoundedCornerShape(12.dp),

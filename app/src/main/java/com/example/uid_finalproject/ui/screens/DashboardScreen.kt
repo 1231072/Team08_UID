@@ -95,7 +95,15 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel = vie
             item { SectionHeader("Rooms") }
 
             items(rooms) { room ->
-                RoomListItem(room)
+                RoomListItem(
+                    room = room,
+                    onTemperatureChange = { newTemperature ->
+                        viewModel.updateRoomTemperature(room.name, newTemperature)
+                    },
+                    onLightIntensityChange = { newIntensity ->
+                        viewModel.updateRoomLightIntensity(room.name, newIntensity)
+                    }
+                )
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }

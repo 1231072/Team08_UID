@@ -11,15 +11,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.uid_finalproject.data.ApiService
+import com.example.uid_finalproject.data.NewUser
+import com.example.uid_finalproject.data.SensorData
 import com.example.uid_finalproject.model.*
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
+    private val apiService = ApiService.create()
+
     val rooms = mutableStateListOf(
-        RoomItem("Kids Room", "22°C • Light: 60%", 0, false, 22, areDoorsClosed = false, areWindowsClosed = false),
-        RoomItem("Master Bedroom", "20°C • Light: Off", 0, true, 20, areDoorsClosed = true, areWindowsClosed = true),
-        RoomItem("Teen Room", "23°C • Light: 80%", 0, true, 23, areDoorsClosed = false, areWindowsClosed = false),
-        RoomItem("Grandparents Room", "24°C • Light: 40%", 0, true, 24, areDoorsClosed = true, areWindowsClosed = true),
-        RoomItem("Living Room", "22°C • Light: 100%", 0, true, 22, areDoorsClosed = false, areWindowsClosed = false),
+        RoomItem("Kids Room", 0, false, 22, 60, areDoorsClosed = false, areWindowsClosed = false),
+        RoomItem("Master Bedroom", 0, true, 20, 0, areDoorsClosed = true, areWindowsClosed = true),
+        RoomItem("Teen Room", 0, true, 23, 80, areDoorsClosed = false, areWindowsClosed = false),
+        RoomItem("Grandparents Room", 0, true, 24, 40, areDoorsClosed = true, areWindowsClosed = true),
+        RoomItem("Living Room", 0, true, 22, 100, areDoorsClosed = false, areWindowsClosed = false),
     )
 
     val statusItems = mutableStateListOf(
@@ -34,7 +41,7 @@ class MainViewModel : ViewModel() {
         RecentActivityItem("Temperature adjusted in Living Room", "15 minutes ago", Icons.Default.Thermostat, Color(0xFFE3F2FD), Color(0xFF1976D2)),
         RecentActivityItem("Grandma took medication", "1 hour ago", Icons.Default.Person, Color(0xFFE8F5E9), Color(0xFF388E3C))
     )
-    
+
     val entryPoints = mutableStateListOf(
         EntryPointItem(1, "Window", EntryState.CURRENTLY_OPEN, Icons.Outlined.Window, isKidsRoom = true),
         EntryPointItem(2, "Door", EntryState.CLOSED, Icons.Outlined.DoorFront, isKidsRoom = true),
@@ -46,9 +53,98 @@ class MainViewModel : ViewModel() {
         EntryPointItem(14, "Grandparents Window", EntryState.CLOSED, Icons.Outlined.Window)
     )
 
+    // Settings states
+    val familyMembers = mutableStateListOf(
+        FamilyMember("Emma (5)", "👧"),
+        FamilyMember("Alex (14)", "👦"),
+        FamilyMember("Dad", "👨"),
+        FamilyMember("Mom", "👩")
+    )
+
+    val notificationSettings = mutableStateListOf(
+        SettingToggleItem("Security Alerts", "Doors, windows, motion", true),
+        SettingToggleItem("Medication Reminders", "For family members", true),
+        SettingToggleItem("Energy Reports", "Daily consumption", false),
+        SettingToggleItem("System Updates", "New features", true)
+    )
+
+    val accessibilitySettings = mutableStateListOf(
+        SettingToggleItem("Large Text", "Easier to read", false),
+        SettingToggleItem("High Contrast", "Better visibility", false),
+        SettingToggleItem("Voice Assistant", "Audio guidance", true)
+    )
+
+    var fontSize by mutableStateOf(1f)
+    var systemVolume by mutableStateOf(0.75f)
+    var isDarkTheme by mutableStateOf(false)
+
     var showCameraPopup by mutableStateOf(false)
     var showAllActivities by mutableStateOf(false)
     var energyFilter by mutableStateOf("Real-Time")
+    var loggedInUser by mutableStateOf("David Costa")
+    var userEmail by mutableStateOf("david.costa@email.com")
+
+    init {
+        fetchUser()
+    }
+
+    private fun fetchUser() {
+        viewModelScope.launch {
+            try {
+                val user = apiService.getUser()
+                loggedInUser = user.name
+                userEmail = user.email
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun addFamilyMember(name: String, emoji: String) {
+        viewModelScope.launch {
+            try {
+                val newUser = NewUser(name, "") // The API doesn't use the email, so we can leave it empty
+                val response = apiService.addUser(newUser)
+                if (response.isSuccessful && response.body() != null) {
+                    familyMembers.add(FamilyMember(name, emoji))
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun updateRoomTemperature(roomName: String, newTemperature: Int) {
+        viewModelScope.launch {
+            try {
+                val sensorData = SensorData("temperature", newTemperature.toString(), "°C")
+                apiService.postSensorData(sensorData)
+
+                val roomIndex = rooms.indexOfFirst { it.name == roomName }
+                if (roomIndex != -1) {
+                    rooms[roomIndex] = rooms[roomIndex].copy(temperature = newTemperature)
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun updateRoomLightIntensity(roomName: String, newIntensity: Int) {
+        viewModelScope.launch {
+            try {
+                val sensorData = SensorData("light", newIntensity.toString(), "%")
+                apiService.postSensorData(sensorData)
+
+                val roomIndex = rooms.indexOfFirst { it.name == roomName }
+                if (roomIndex != -1) {
+                    rooms[roomIndex] = rooms[roomIndex].copy(lightIntensity = newIntensity)
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
 
     fun onSeeMoreActivitiesClick() {
         showAllActivities = !showAllActivities
@@ -97,5 +193,29 @@ class MainViewModel : ViewModel() {
             val newState = if (item.name.contains("Window")) EntryState.CLOSED else EntryState.LOCKED
             entryPoints[index] = item.copy(state = newState)
         }
+    }
+
+    fun logout() {
+        // Reset all necessary states
+        isNightModeActive = false
+        // ... other states
+    }
+
+    fun onNotificationSettingChanged(item: SettingToggleItem, isChecked: Boolean) {
+        val index = notificationSettings.indexOf(item)
+        if (index != -1) {
+            notificationSettings[index] = item.copy(isChecked = isChecked)
+        }
+    }
+
+    fun onAccessibilitySettingChanged(item: SettingToggleItem, isChecked: Boolean) {
+        val index = accessibilitySettings.indexOf(item)
+        if (index != -1) {
+            accessibilitySettings[index] = item.copy(isChecked = isChecked)
+        }
+    }
+
+    fun onThemeChanged(dark: Boolean) {
+        isDarkTheme = dark
     }
 }
