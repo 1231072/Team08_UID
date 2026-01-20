@@ -1,5 +1,6 @@
 package com.example.uid_finalproject.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -143,14 +144,23 @@ fun ActivityRow(item: RecentActivityItem) {
 }
 
 // quick action button
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickActionCard(item: QuickActionItem, modifier: Modifier = Modifier) {
+fun QuickActionCard(
+    item: QuickActionItem,
+    modifier: Modifier = Modifier,
+    isActive: Boolean = false, // Novo: controla se o modo está ligado
+    onClick: () -> Unit        // Novo: a ação que acontece ao clicar
+) {
     Card(
         modifier = modifier
             .height(100.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = item.bgColor),
-        onClick = {}
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive) item.color.copy(alpha = 0.2f) else item.bgColor
+        ),
+        border = if (isActive) BorderStroke(2.dp, item.color) else null,
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -166,7 +176,7 @@ fun QuickActionCard(item: QuickActionItem, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = item.label,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
                 color = Color.Black
             )
         }
